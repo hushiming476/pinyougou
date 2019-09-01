@@ -10,6 +10,7 @@
   <groupId>com.pinyougou</groupId>  
   <artifactId>pinyougou-sellergoods-service</artifactId>
   <packaging>war</packaging>
+    
     <dependencies>
         <dependency>
             <groupId>com.pinyougou</groupId>
