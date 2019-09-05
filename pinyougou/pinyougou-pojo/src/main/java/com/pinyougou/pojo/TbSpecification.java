@@ -1,5 +1,7 @@
 package com.pinyougou.pojo;
 
+import com.pinyougou.vo.Specification;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -7,7 +9,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Table(name = "tb_specification")
-public class TbSpecification implements Serializable {
+public class TbSpecification  implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

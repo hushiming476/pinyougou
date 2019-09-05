@@ -1,5 +1,6 @@
-.iml
-target
-.idea
-.classpath
-.project
+提交代码到git仓库的步骤：
+1、 Create Git Respository
+2.到项目所在目录添加忽略文件--递归忽略
+3.回到idea，补充需要忽略的文件，例如：.iml   target    .classpath  .project
+4.ctrl + K ： 添加到本地，
+5、Push:  选择需要提交的文件并写日志，复制仓库地址过来、完。
