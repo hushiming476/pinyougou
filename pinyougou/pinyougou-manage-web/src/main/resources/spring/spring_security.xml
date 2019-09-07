@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/security
+http://www.springframework.org/schema/security/spring-security.xsd">
+
+             <!--1、哪些是不需要拦截的-->
+                <http pattern="/login.html" security="none"/>
+                <http pattern="/css/**" security="none"/>
+                <http pattern="/img/**" security="none"/>
+                <http pattern="/plugins/**" security="none"/>
+                <http pattern="/js/**" security="none"/>
+
+
+             <!--2、配置哪些资源需要什么角色权限才能访问-->
+             <http use-expressions="false">
+                 <!--2.1表达式__角色的名称 intercept:拦截  access:访问 -->
+                 <intercept-url pattern="/**" access="ROLE_USER"/>
+                 <!--2.2设置表单登陆项-->
+                  <form-login always-use-default-target="true"
+                              login-page="/login.html"
+                              default-target-url="/admin/index.html"
+                              authentication-failure-forward-url="/login.html"/>
+                  <!--2.3禁止跨站请求访问-->
+                    <csrf disabled="true"/>
+                 <!--2.4 如果使用了 iframe 等框架，希望跳转也是在框架内跳转的话 -->
+                 <headers>
+                     <frame-options policy="SAMEORIGIN"/>
+                 </headers>
+
+                 <!-- 2.5 退出   index.html:282行-->
+                 <logout/>
+
+             </http>
+
+            <!--3、密码加密方式-->
+            <beans:bean id="passwordEncoder" class="org.springframework.security.crypto.password.NoOpPasswordEncoder"/>
+            <!--4、配置认证管理器   authorities:权限-->
+          <authentication-manager>
+              <authentication-provider>
+                  <password-encoder ref="passwordEncoder"/>
+                  <user-service>
+                      <user name="itcast" authorities="ROLE_USER" password="123456"/>
+                      <user name="admin" authorities="ROLE_USER" password="123456"/>
+                  </user-service>
+              </authentication-provider>
+          </authentication-manager>
+
+
+</beans:beans>
