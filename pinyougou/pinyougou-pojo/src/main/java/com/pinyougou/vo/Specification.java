@@ -12,6 +12,7 @@ public class Specification implements Serializable {
     //规格选项列表
     private List<TbSpecificationOption> specificationOptionList;
 
+
     public TbSpecification getSpecification() {
         return specification;
     }

@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../itcast_spring_security/itcast_spring_security.iml" filepath="$PROJECT_DIR$/../itcast_spring_security/itcast_spring_security.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../fastdfs_client/cn.itcast.fastdfs_client.iml" filepath="$PROJECT_DIR$/../../fastdfs_client/cn.itcast.fastdfs_client.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../itcast-fastdfs/cn.itcast.itcast-fastdfs.iml" filepath="$PROJECT_DIR$/../itcast-fastdfs/cn.itcast.itcast-fastdfs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../itcast_spring_security/cn.itcast.itcast_spring_security.iml" filepath="$PROJECT_DIR$/../itcast_spring_security/cn.itcast.itcast_spring_security.iml" />
       <module fileurl="file://$PROJECT_DIR$/pinyougou.iml" filepath="$PROJECT_DIR$/pinyougou.iml" />
       <module fileurl="file://$PROJECT_DIR$/pinyougou-common/pinyougou-common.iml" filepath="$PROJECT_DIR$/pinyougou-common/pinyougou-common.iml" />
       <module fileurl="file://$PROJECT_DIR$/pinyougou-dao/pinyougou-dao.iml" filepath="$PROJECT_DIR$/pinyougou-dao/pinyougou-dao.iml" />

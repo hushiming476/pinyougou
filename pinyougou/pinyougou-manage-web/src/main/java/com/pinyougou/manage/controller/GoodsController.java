@@ -3,9 +3,12 @@ package com.pinyougou.manage.controller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.github.pagehelper.PageInfo;
 import com.pinyougou.pojo.TbGoods;
+import com.pinyougou.pojo.TbItemCat;
 import com.pinyougou.sellergoods.service.GoodsService;
 import com.pinyougou.vo.Result;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequestMapping("/goods")
 @RestController
@@ -86,5 +89,7 @@ public class GoodsController {
                            @RequestBody TbGoods goods) {
         return goodsService.search(pageNum, pageSize, goods);
     }
+
+
 
 }

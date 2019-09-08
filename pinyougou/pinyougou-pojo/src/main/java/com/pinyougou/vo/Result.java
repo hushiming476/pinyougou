@@ -7,6 +7,7 @@ public class Result implements Serializable {
     private Boolean success;
     private String message;
 
+
     public Boolean getSuccess() {
         return success;
     }
