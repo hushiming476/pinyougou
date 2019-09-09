@@ -1,11 +1,14 @@
 package com.pinyougou.sellergoods.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pinyougou.mapper.BrandMapper;
+import com.pinyougou.mapper.SpecificationOptionMapper;
 import com.pinyougou.mapper.TypeTemplateMapper;
 import com.pinyougou.mapper.service.impl.BaseServiceImpl;
+import com.pinyougou.pojo.TbSpecificationOption;
 import com.pinyougou.pojo.TbTypeTemplate;
 import com.pinyougou.sellergoods.service.TypeTemplateService;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +27,8 @@ public class TypeTemplateServiceImpl extends BaseServiceImpl<TbTypeTemplate> imp
     // 注入品牌接口
     @Autowired
     private BrandMapper brandMapper;
+    @Autowired
+    private SpecificationOptionMapper specificationOptionMapper;
 
     @Override
     public PageInfo<TbTypeTemplate> search(Integer pageNum, Integer pageSize, TbTypeTemplate typeTemplate) {
@@ -44,6 +49,39 @@ public class TypeTemplateServiceImpl extends BaseServiceImpl<TbTypeTemplate> imp
         return new PageInfo<>(list);
     }
 
+            /*
+            根据分类模板id查询分类模板对应的规格及其选项
+            * @param id 分类模板id
+            * @return 规格及其选项列表
+            * 分类模板：一级--二级--三级-->规格选项列表
+            * findSpecList
+            */
+            @Override
+            public List<Map> findSpecList(Long id) {
+                //1、根据分类模板id查询分类模板
+                TbTypeTemplate typeTemplate = findOne(id);
+                List<Map> specMapList = null;
+                if (StringUtils.isNotBlank(typeTemplate.getSpecIds())) {
+                    /**
+                     * 参数1：要转换的json字符串
+                     * 参数2：转换之后的对象类型
+                     */
+                    specMapList = JSON.parseArray(typeTemplate.getSpecIds(), Map.class);
 
+                    //2、遍历每个规格，根据规格查询其选项
+                    for (Map map : specMapList) {
+                        //规格id
+                        String specId = map.get("id").toString();
+                        //根据规格id查询规格选项
+                        //select * from tb_specification_option where spec_id=?
+                        TbSpecificationOption param = new TbSpecificationOption();
+                        param.setSpecId(Long.parseLong(specId));
+                        List<TbSpecificationOption> options = specificationOptionMapper.select(param);
+                        map.put("options", options);
+                    }
+                }
+                //3、返回
+                return specMapList;
+            }
 
 }

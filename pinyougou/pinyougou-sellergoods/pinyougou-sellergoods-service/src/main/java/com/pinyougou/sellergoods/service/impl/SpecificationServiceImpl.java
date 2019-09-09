@@ -85,15 +85,16 @@ public class SpecificationServiceImpl extends BaseServiceImpl<TbSpecification> i
           update(specification.getSpecification());
             //2、根据规格id删除规格选项
           TbSpecificationOption param = new TbSpecificationOption();
-            //3、将规格选项列表保存到数据库中
-          for (TbSpecificationOption tbSpecificationOption  : specification.getSpecificationOptionList() ) {
-              tbSpecificationOption.setSpecId(specification.getSpecification().getId());
             // 4.调用规格列表接口删除
+            param.setSpecId(specification.getSpecification().getId());
             specificationOptionMapper.delete(param);
-            tbSpecificationOption.setSpecId(specification.getSpecification().getId());
+            //3、将规格选项列表保存到数据库中
+        if (specification.getSpecificationOptionList() != null && specification.getSpecificationOptionList().size()>0) {
+            for (TbSpecificationOption tbSpecificationOption : specification.getSpecificationOptionList()) {
+                tbSpecificationOption.setSpecId(specification.getSpecification().getId());
+            }
+            specificationOptionMapper.insertList(specification.getSpecificationOptionList());
         }
-
-           specificationOptionMapper.insertList(specification.getSpecificationOptionList());
     }
 
     //5、删除
