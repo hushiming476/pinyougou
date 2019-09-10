@@ -11,12 +11,12 @@ import com.pinyougou.sellergoods.service.GoodsService;
 import com.pinyougou.vo.Goods;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+@Transactional
 @Service
 public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsService {
     //商品
@@ -45,7 +45,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
 
 
-
+    // 1、分页查询
     @Override
     public PageInfo<TbGoods> search(Integer pageNum, Integer pageSize, TbGoods goods) {
         //设置分页
@@ -55,18 +55,35 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
         //创建查询条件对象
         Example.Criteria criteria = example.createCriteria();
+        //不查询已经删除的商品
+        criteria.andNotEqualTo("isDelete","1");
 
+        /**
+         *  ID
+         *  状态：<select v-model="searchEntity.auditStatus">
+         *  商品名称：<input v-model="searchEntity.goodsName">
+         */
         //模糊查询
-        /**if (StringUtils.isNotBlank(goods.getProperty())) {
-            criteria.andLike("property", "%" + goods.getProperty() + "%");
-        }*/
+        //审核状态
+        if (StringUtils.isNotBlank(goods.getAuditStatus())) {
+            criteria.andEqualTo("auditStatus", goods.getAuditStatus());
+        }
+        //商家
+        if (StringUtils.isNotBlank(goods.getSellerId())) {
+            criteria.andEqualTo("sellerId", goods.getSellerId());
+        }
+
+        //商品名称模糊查询
+        if (StringUtils.isNotBlank(goods.getGoodsName())) {
+            criteria.andLike("goodsName", "%" + goods.getGoodsName() + "%");
+        }
 
         List<TbGoods> list = goodsMapper.selectByExample(example);
         return new PageInfo<>(list);
     }
 
     /**
-     * 新增
+     * 2、新增
      * @param goods 实体
      * @return 操作结果
      */
@@ -82,7 +99,115 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
     }
 
     /**
-     * 保存商品sku
+     * 3、查看商品管理列表
+     */
+    @Override
+    public Goods findGoodsById(Long id) {
+        Goods goods = new Goods();
+        //基本
+        goods.setGoods(findOne(id));
+        //描述
+        goods.setGoodsDesc(goodsDescMapper.selectByPrimaryKey(id));
+
+        //sku 列表
+        //sql --> select * from tb_item where goods_id=?
+        TbItem param = new TbItem();
+        param.setGoodsId(id);
+        List<TbItem> itemList = itemMapper.select(param);
+        goods.setItemList(itemList);
+        return goods;
+    }
+
+    /**
+     * 4、商品修改的业务方法
+     */
+    @Override
+    public void updateGoods(Goods goods) {
+        //1、更新商品基本信息
+        goods.getGoods().setAuditStatus("0");
+        update(goods.getGoods());
+        //2、更新商品描述信息
+        goodsDescMapper.selectByPrimaryKey(goods.getGoodsDesc());
+        //3、根据商品spu id 删除sku
+        //sql --> delete from tb_item where goods_id=?
+        TbItem param = new TbItem();
+        param.setGoodsId(goods.getGoods().getId());
+        itemMapper.delete(param);
+        //4、保存商品sku
+        saveItemList(goods);
+
+    }
+
+    /**
+     *5、 根据商品spu id数组更新商品spu 的审核状态
+     * @param status 商品spu状态
+     * @param ids 商品spu id数组
+     * @return 操作结果
+     */
+    @Override
+    public void updateStatus(String status, Long ids) {
+        /**
+         * -- 根据商品spu id数组更新商品spu 的审核状态为1
+         * update tb_goods set aduit_status=? where id in(?,?...)
+         */
+        //要更新的数据
+        TbGoods tbGoods = new TbGoods();
+        tbGoods.setAuditStatus(status);
+        //更新的条件
+        Example example = new Example(TbGoods.class);
+        example.createCriteria().andIn("id", Arrays.asList(ids));
+
+        goodsMapper.updateByExampleSelective(tbGoods,example);
+
+        //实现运营商--查看商品审核列表
+        TbItem tbItem = new TbItem();
+        tbItem.setStatus("0");
+        //审核通过
+        if ("2".equals(status)){
+            tbItem.setStatus("1");
+        }else {
+        //审核不通过
+            tbItem.setStatus("0");
+        }
+        // 更新的条件
+        Example itemExample = new Example(TbItem.class);
+        itemExample.createCriteria().andIn("goodsId",Arrays.asList(ids));
+        itemMapper.updateByExampleSelective(tbItem,itemExample);
+    }
+
+    /**
+     * 5.1运营商--商品审核：删除，逻辑删除-update
+     */
+    @Override
+    public void deleteGoodsByIds(Long[] ids) {
+        //更新商品spu 的删除状态修改为1
+        //sql --> update tb_goods set is_delete='1' where id in(?,?,..)
+        TbGoods tbGoods = new TbGoods();
+        tbGoods.setIsDelete("1");
+
+
+        Example example = new Example(TbGoods.class);
+        example.createCriteria().andIn("id",Arrays.asList(ids));
+        goodsMapper.updateByExampleSelective(tbGoods,example);
+
+    }
+
+    /**
+     * 5.2上下架：1 表示上架、0 表示下架
+     */
+    @Override
+    public void deleteSellByIds(Long[] ids) {
+        TbGoods tbGoods = new TbGoods();
+        tbGoods.setIsMarketable("1");
+
+        Example example = new Example(TbGoods.class);
+        example.createCriteria().andIn("id",Arrays.asList(ids));
+        goodsMapper.updateByExampleSelective(tbGoods,example);
+
+    }
+
+    /**
+     * 6、保存商品sku
      * @param goods 商品vo
      */
     
@@ -129,7 +254,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
     }
 
             /**
-            * 设置sku数据
+            *7、 设置sku数据
             * @param tbItem sku商品
             * @param goods 商品vo
             */
@@ -162,5 +287,6 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
             }
         }
     }
+
 
 }
