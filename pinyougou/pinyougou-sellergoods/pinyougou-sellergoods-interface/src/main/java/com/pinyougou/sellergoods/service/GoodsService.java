@@ -50,8 +50,5 @@ public interface GoodsService extends BaseService<TbGoods> {
      */
     void deleteGoodsByIds(Long[] ids);
 
-    /**
-     * 上下架：1 表示上架、0 表示下架
-     */
-    void deleteSellByIds(Long[] ids);
+
 }

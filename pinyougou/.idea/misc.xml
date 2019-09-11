@@ -2,7 +2,9 @@
 <project version="4">
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$/../itcast_spring_security" />
+    <file type="web" url="file://$PROJECT_DIR$/pinyougou-content/pinyougou-content-service" />
     <file type="web" url="file://$PROJECT_DIR$/pinyougou-manage-web" />
+    <file type="web" url="file://$PROJECT_DIR$/pinyougou-portal-web" />
     <file type="web" url="file://$PROJECT_DIR$/pinyougou-sellergoods/pinyougou-sellergoods-service" />
     <file type="web" url="file://$PROJECT_DIR$/pinyougou-shop-web" />
   </component>
@@ -16,6 +18,7 @@
         <option value="$PROJECT_DIR$/../itcast_spring_security/pom.xml" />
         <option value="$PROJECT_DIR$/../../fastdfs_client/pom.xml" />
         <option value="$PROJECT_DIR$/../itcast-fastdfs/pom.xml" />
+        <option value="$PROJECT_DIR$/../itcast-redis/pom.xml" />
       </list>
     </option>
   </component>

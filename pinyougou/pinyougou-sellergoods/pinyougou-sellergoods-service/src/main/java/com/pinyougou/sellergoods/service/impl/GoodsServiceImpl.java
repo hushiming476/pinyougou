@@ -192,20 +192,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
     }
 
-    /**
-     * 5.2上下架：1 表示上架、0 表示下架
-     */
-    @Override
-    public void deleteSellByIds(Long[] ids) {
-        TbGoods tbGoods = new TbGoods();
-        tbGoods.setIsMarketable("1");
-
-        Example example = new Example(TbGoods.class);
-        example.createCriteria().andIn("id",Arrays.asList(ids));
-        goodsMapper.updateByExampleSelective(tbGoods,example);
-
-    }
-
+    
     /**
      * 6、保存商品sku
      * @param goods 商品vo
@@ -287,6 +274,8 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
             }
         }
     }
+
+
 
 
 }
